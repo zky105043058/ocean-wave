@@ -3,7 +3,7 @@
  */
 
 module.exports = pathtoRegexp;
-
+#ªÿÀﬁ…·
 /**
  * Match matching groups in a regular expression.
  */
