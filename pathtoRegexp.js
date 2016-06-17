@@ -1,9 +1,9 @@
 /**
  * Expose `pathtoRegexp`.
  */
-#github edit
+// #github edit
 module.exports = pathtoRegexp;
-#hello hello
+
 /**
  * Match matching groups in a regular expression.
  */
