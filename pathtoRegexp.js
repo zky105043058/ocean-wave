@@ -1,7 +1,7 @@
 /**
  * Expose `pathtoRegexp`.
  */
-#爱爱的发
+#github edit
 module.exports = pathtoRegexp;
 
 /**
