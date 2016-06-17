@@ -3,7 +3,7 @@
  */
 #github edit
 module.exports = pathtoRegexp;
-#ªÿÀﬁ…·
+#hello hello
 /**
  * Match matching groups in a regular expression.
  */
