@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Rotate Text</title>
+	<style>
+		ul{padding: 40px 0;}
+		li{list-style: none;float: left;perspective: 100px;}
+		li a{float:left;position: relative;color: #888;text-decoration: none;transform-style: preserve-3d;transition: .2s;transform-origin: center center -14px;}
+		li a:hover{transform: rotateX(-90deg);}
+		li a span{float: left;font: 14px/20px 宋体;padding: 4px 10px;width: 60px;color: #2dacbf;backface-visibility: hidden;}
+		li a span:first-child{position: absolute;top: -100%;transform-origin: bottom;transform: rotateX(90deg);color: #f60}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+		<ul class="nav">
+			<li>
+		    	<a href="#">
+		        	<span>选项1</span>
+		            <span>选项1</span>
+		        </a>
+		    </li>
+		    <li>
+		    	<a href="#">
+		        	<span>选项2</span>
+		            <span>选项2</span>
+		        </a>
+		    </li>
+		    <li>
+		    	<a href="#">
+		        	<span>选项3</span>
+		            <span>选项3</span>
+		        </a>
+		    </li>
+		</ul>
+	</div>
+	
+</body>
+</html>

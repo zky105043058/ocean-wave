@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Test</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			*{padding: 0;margin: 0;}
+			body{font-size: 14px;background: #fff;font-family: 微软雅黑;}
+			a{text-decoration: none;}
+			li{list-style: none;}
+			h3,strong{font-weight: normal;}
+			em,i{font-style: normal;}
+			
+			.info{width: 400px;height: 230px;position: absolute;left: calc(50% - 200px);top: calc(50% - 115px);background: -webkit-linear-gradient(top,#fff,#ffe7e2 100%);overflow: hidden;opacity: 0.1;perspective: 1200px;}
+			h3{height: 46px;line-height: 46px;color: #f88a71;padding-left: 52px;background: url(../images/info.png) no-repeat 20px 12px;}
+			h3+span{font-size: 28px;position: absolute;right: 18px;top: 16px;line-height: 0.5;color: #f89079;;cursor: pointer;transition: 0.5s;}
+			h3+span:hover{transform: rotate(-180deg);}
+			a{height: 24px;line-height: 24px;color: #f4264d;display:block;padding: 8px 20px;}
+			a:after{content: '';display: block;clear: both;visibility: hidden;}
+			a:hover{box-shadow: 0 8px 8px #ddd;}
+			a:hover strong{background: #ffde00;}
+			p strong{float:left;width: 84px;text-align: center;color: #fff;background: #f4264d;}
+			p span{float:left;width: 170px;padding-left: 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+			p em{float:left;width: 64px;text-align: right;}
+			p bdo{float: left;padding-left: 20px;transform: scaleY(2);}
+		</style>
+		<script>
+			onload = function(){
+				animate();
+			}
+			function animate(){
+				var win = document.getElementsByClassName('info')[0];
+				pos = window.innerHeight/2 - 23;
+				win.addEventListener('webkitTransitionEnd',function(){
+					win.removeEventListener('webkitTransitionEnd',arguments.callee);
+					win.style.boxShadow = 'rgba(148, 92, 78, 0.3) 0px 20px 80px';
+					win.style.transition = '.8s';
+					win.style.height = '';
+					win.style.top = '';
+					tabAnimate();
+					initEvent();
+				},false);
+				win.style.cssText = 'height: 46px;opacity: 1;top: '+pos+'px;transition: opacity .6s;';
+			}
+
+			function tabAnimate(){
+				var tabs = document.querySelectorAll('.info p a'),
+					tab;
+				for(var i=0,len=tabs.length;i<len;i++){
+					tab = tabs[i];
+					tab.style.cssText = 'transformOrigin: top;transform: rotateX(90deg);opacity: 0;';
+				}
+				setTimeout(function(){
+					for(i=0;i<len;i++){
+						tab = tabs[i];
+						tab.style.transition = '.5s '+i*200+'ms';
+						tab.style.transform = '';
+						tab.style.opacity = '';
+					}
+				},200);
+			}
+			
+			function initEvent(){
+				var tabs = document.querySelectorAll('.info p a'),
+					i = 0,len = tabs.length,tab;
+				for(;i<len;i++){
+					tab = tabs[i];
+					tab.style.transition = '0.6s';
+					tab.style.transformOrigin = 'center';
+					tab.onmouseenter = function(){
+						this.lPos = this.getBoundingClientRect().left;
+					}
+					tab.onmousemove = function(e){
+						var dis = e.clientX - this.lPos,
+							width = this.offsetWidth;
+						if(this.style.transform == '' || dis<width/4 || dis>width*3/4){
+							this.style.transition = this.style.transform == '' ? '0.6s' : '1.2s';
+							var deg = dis > width/2 ? 30 : -30;
+							this.style.transform = 'rotateY('+deg+'deg)';
+						}
+					}
+					tab.parentNode.onmouseleave = function(){
+						this.children[0].style.transform = '';
+					}
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="info">
+			<div>
+				<h3>妙味公告</h3>
+				<span>&times;</span>
+			</div>
+			<p>
+				<a href="#">
+					<strong>全日制</strong>
+					<span>零基础PC+移动端+响应式</span>
+					<em>7月下旬</em>
+					<bdo>&gt;</bdo>
+				</a>
+			</p>
+			<p>
+				<a href="#">
+					<strong>Js全日制</strong>
+					<span>JavaScript全栈进阶课程</span>
+					<em>7月下旬</em>
+					<bdo>&gt;</bdo>
+				</a>
+			</p>
+			<p>
+				<a href="#">
+					<strong>VIP公开课</strong>
+					<span>腾讯平台直播-JS练习讲解</span>
+					<em>6月17日</em>
+					<bdo>&gt;</bdo>
+				</a>
+			</p>
+			<p>
+				<a href="#">
+					<strong>VIP视频</strong>
+					<span>JS游戏，移动端开发，React开发</span>
+					<em>更新中</em>
+					<bdo>&gt;</bdo>
+				</a>
+			</p>
+		</div>
+	</body>
+</html>
