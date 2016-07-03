@@ -64,6 +64,7 @@
 				20,21,22, 20,22,23
 			]);
 		var angle = {x:0,y:0};
+		var fov = 25;
 		onload = function(){
 			var canvas = document.getElementById('abc');
 			var gl = canvas.getContext('webgl');
@@ -75,9 +76,7 @@
 				coord = gl.getAttribLocation(gl.program,'coord'),
 				mvpMatrix = gl.getUniformLocation(gl.program,'mvpMatrix'),
 				sampler = gl.getUniformLocation(gl.program,'sampler');
-			//投影视图模型
-			var matrix = new Matrix4();
-			matrix.setPerspective(25,canvas.width/canvas.height,1,100).lookAt(0,0,7,0,0,0,0,1,0);
+			
 			//缓冲区
 			var buffer = gl.createBuffer(),
 				iBuffer = gl.createBuffer();
@@ -107,9 +106,10 @@
 			}
 			img.src = 'images/cloud.gif';
 			function draw(){
-				var m = new Matrix4();
-				m.set(matrix).rotate(angle.x,1,0,0).rotate(angle.y,0,1,0);
-				gl.uniformMatrix4fv(mvpMatrix,false,m.elements);
+				//投影视图模型
+				var matrix = new Matrix4();
+				matrix.setPerspective(fov,canvas.width/canvas.height,1,100).lookAt(0,0,7,0,0,0,0,1,0).rotate(angle.x,1,0,0).rotate(angle.y,0,1,0);
+				gl.uniformMatrix4fv(mvpMatrix,false,matrix.elements);
 				gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 				gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
 				requestAnimationFrame(draw);
@@ -134,6 +134,10 @@
 					lastX = e.clientX;
 					lastY = e.clientY;
 				}
+			}
+			canvas.onmousewheel = function(e){
+				fov -= e.wheelDelta/120;
+				fov = Math.max(10,Math.min(fov,45));
 			}
 		}
 	</script>
