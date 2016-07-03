@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RotateCubic</title>
+	<style>
+	*{padding: 0;margin: 0;}
+	</style>
+
+	<script src="js/cuon-utils.js"></script>
+	<script src="js/cuon-matrix.js"></script>
+	<script src="js/webgl-utils.js"></script>
+	<script src="js/webgl-debug.js"></script>
+	<script>
+		var V = `attribute vec4 aPos;
+		attribute vec4 aColor;
+		uniform mat4 mvpMatrix;
+		varying vec4 vColor;
+		uniform bool clicked;
+		void main(){
+			gl_Position = mvpMatrix * aPos;
+			if(clicked){
+				vColor = vec4(0,0,0,0.5);
+			}else{
+				vColor = aColor;
+			}
+		}`;
+		var F = `precision mediump float;
+		uniform sampler2D sampler;
+		varying vec4 vColor;
+		void main(){
+			gl_FragColor = vColor;
+		}`;
+		var data = new Float32Array([
+			-0.5,0.5,0.5, 0,1,0,
+			0.5,0.5,0.5, 1,0,1,
+			0.5,-0.5,0.5, 1,1,0,
+			-0.5,-0.5,0.5, 0,0,1,
+
+			-0.5,0.5,-0.5, 0,1,1,
+			0.5,0.5,-0.5, 1,1,1,
+			0.5,-0.5,-0.5, 1,0,0,
+			-0.5,-0.5,-0.5, 0,0,0
+		]);
+		var size = data.BYTES_PER_ELEMENT;
+		var indexData = new Uint8Array([
+				0,1,2, 0,2,3,
+				4,5,6, 4,6,7,
+				4,0,3, 4,3,7,
+				1,5,6, 1,6,2,
+				4,5,1, 4,1,0,
+				7,6,2, 7,2,3
+			]);
+		onload = function(){
+			var canvas = document.getElementById('abc');
+			var gl = canvas.getContext('webgl');
+			if(!initShaders(gl,V,F)){
+				console.error('Failed to init shaders');
+				return;
+			}
+			var aPos = gl.getAttribLocation(gl.program,'aPos'),
+				aColor = gl.getAttribLocation(gl.program,'aColor'),
+				mvpMatrix = gl.getUniformLocation(gl.program,'mvpMatrix'),
+				clicked = gl.getUniformLocation(gl.program,'clicked'),
+				pixels = new Uint8Array(4);
+			
+			//投影视图模型
+			var matrix = new Matrix4();
+			matrix.setPerspective(35,canvas.width/canvas.height,1,100).lookAt(3,3,7,0,0,0,0,1,0);
+			gl.uniformMatrix4fv(mvpMatrix,false,matrix.elements);
+			//缓冲区
+			var buffer = gl.createBuffer(),
+				iBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+			gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+			gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,6*size,0);
+			gl.enableVertexAttribArray(aPos);
+			gl.vertexAttribPointer(aColor,3,gl.FLOAT,false,6*size,3*size);
+			gl.enableVertexAttribArray(aColor);
+			//索引缓冲区
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuffer);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,indexData,gl.STATIC_DRAW);
+
+			gl.uniform1i(clicked,0);
+			gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+			gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
+			// 事件
+			initEvent();
+			function initEvent(){
+				var rect = canvas.getBoundingClientRect();
+				canvas.onclick = function(e){
+					gl.uniform1i(clicked,1);
+					gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+					gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
+					gl.readPixels(e.clientX-rect.left,rect.bottom-e.clientY,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+					gl.uniform1i(clicked,0);
+					gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+					gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
+					if(pixels[3] == 128){
+						document.querySelector('span').textContent = '选中';
+					}else{
+						document.querySelector('span').textContent = '未选中';
+					}
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+	<canvas id="abc" width="600" height="400" style="border:1px solid red;"></canvas>
+	<span>点击选中立方体</span>
+</body>
+</html>

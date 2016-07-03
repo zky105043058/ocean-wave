@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RotateCubic</title>
+	<script src="js/cuon-utils.js"></script>
+	<script src="js/cuon-matrix.js"></script>
+	<script src="js/webgl-utils.js"></script>
+	<script src="js/webgl-debug.js"></script>
+	<script>
+		var V = `attribute vec4 aPos;
+		attribute vec2 coord;
+		attribute float aOpacity;
+		uniform mat4 mvpMatrix;
+		varying vec2 vCoord;
+		varying float opacity;
+		void main(){
+			gl_Position = mvpMatrix * aPos;
+			vCoord = coord;
+			opacity = aOpacity;
+		}`;
+		var F = `precision mediump float;
+		uniform sampler2D sampler;
+		uniform bool isClicked;
+		uniform int clickedColor;
+		varying vec2 vCoord;
+		varying float opacity;
+		void main(){
+			if(isClicked){
+				gl_FragColor = vec4(0,0,0,opacity/255.0);
+			}else if(bool(clickedColor) && clickedColor==int(opacity)){
+				gl_FragColor = vec4(vec3(texture2D(sampler,vCoord)*0.6),1);
+			}else{
+				gl_FragColor = texture2D(sampler,vCoord);
+			}
+		}`;
+		var data = new Float32Array([
+			-0.5,0.5,0.5, 0,1, 1,
+			0.5,0.5,0.5, 1,1, 1,
+			0.5,-0.5,0.5, 1,0, 1,
+			-0.5,-0.5,0.5, 0,0, 1,
+
+			-0.5,0.5,-0.5, 0,1, 2,
+			0.5,0.5,-0.5, 1,1, 2,
+			0.5,-0.5,-0.5, 1,0, 2,
+			-0.5,-0.5,-0.5, 0,0, 2,
+
+			-0.5,0.5,-0.5, 0,1, 3,
+			-0.5,0.5,0.5, 1,1, 3,
+			-0.5,-0.5,0.5, 1,0, 3,
+			-0.5,-0.5,-0.5, 0,0, 3,
+
+			0.5,0.5,0.5, 0,1, 4,
+			0.5,0.5,-0.5, 1,1, 4,
+			0.5,-0.5,-0.5, 1,0, 4,
+			0.5,-0.5,0.5, 0,0, 4,
+
+			-0.5,0.5,-0.5, 0,1, 5,
+			0.5,0.5,-0.5, 1,1, 5,
+			0.5,0.5,0.5, 1,0, 5,
+			-0.5,0.5,0.5, 0,0, 5,
+
+			0.5,-0.5,-0.5, 0,1, 6,
+			-0.5,-0.5,-0.5, 1,1, 6,
+			-0.5,-0.5,0.5, 1,0, 6,
+			0.5,-0.5,0.5, 0,0, 6
+
+		]);
+		var size = data.BYTES_PER_ELEMENT;
+		var indexData = new Uint8Array([
+				0,1,2, 0,2,3,
+				4,5,6, 4,6,7,
+				8,9,10, 8,10,11,
+				12,13,14, 12,14,15,
+				16,17,18, 16,18,19,
+				20,21,22, 20,22,23
+			]);
+		var angle = {x:0,y:0};
+		var fov = 25;
+		onload = function(){
+			var canvas = document.getElementById('abc');
+			var gl = canvas.getContext('webgl');
+			if(!initShaders(gl,V,F)){
+				console.error('Failed to init shaders');
+				return;
+			}
+			var aPos = gl.getAttribLocation(gl.program,'aPos'),
+				coord = gl.getAttribLocation(gl.program,'coord'),
+				aOpacity = gl.getAttribLocation(gl.program,'aOpacity'),
+				mvpMatrix = gl.getUniformLocation(gl.program,'mvpMatrix'),
+				sampler = gl.getUniformLocation(gl.program,'sampler'),
+				isClicked = gl.getUniformLocation(gl.program,'isClicked'),
+				clickedColor = gl.getUniformLocation(gl.program,'clickedColor'),
+				pixels = new Uint8Array(4),
+				click,clickX,clickY;
+			
+			//缓冲区
+			var buffer = gl.createBuffer(),
+				iBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+			gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+			gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,6*size,0);
+			gl.enableVertexAttribArray(aPos);
+			gl.vertexAttribPointer(coord,2,gl.FLOAT,false,6*size,3*size);
+			gl.enableVertexAttribArray(coord);
+			gl.vertexAttribPointer(aOpacity,1,gl.FLOAT,false,6*size,5*size);
+			gl.enableVertexAttribArray(aOpacity);
+			//索引缓冲区
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuffer);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,indexData,gl.STATIC_DRAW);
+			//纹理
+			gl.activeTexture(gl.TEXTURE0);
+			var texture = gl.createTexture(),img;
+			gl.bindTexture(gl.TEXTURE_2D,texture);
+			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+			gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+			img = new Image();
+			img.onload = function(){
+				gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img);
+				gl.uniform1i(sampler,0);
+				gl.enable(gl.DEPTH_TEST);
+				gl.clearColor(1,1,1,1);
+				draw();
+				initEvent(canvas);
+			}
+			img.src = 'images/cloud.gif';
+			function draw(){
+				//投影视图模型
+				var matrix = new Matrix4();
+				matrix.setPerspective(fov,canvas.width/canvas.height,1,100).lookAt(0,0,7,0,0,0,0,1,0).rotate(angle.x,1,0,0).rotate(angle.y,0,1,0);
+				gl.uniformMatrix4fv(mvpMatrix,false,matrix.elements);
+				gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+				gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
+				if(click){
+					gl.readPixels(clickX,clickY,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+					// 没有点击在立方体上，之前被点击的面保持不变
+					if(pixels[3]!=255){
+						gl.uniform1i(clickedColor,pixels[3]);
+					}
+					gl.uniform1i(isClicked,0);
+					gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
+					click = false;
+				}
+				requestAnimationFrame(draw);
+			}
+			function initEvent(canvas){
+				var drawing = false,
+					factor = canvas.height/100,
+					lastX,lastY;
+				canvas.onmousedown = function(e){
+					drawing = true;
+					lastX = e.clientX;
+					lastY = e.clientY;
+				}
+				canvas.onmouseup = function(){
+					drawing = false;
+				}
+				canvas.onmousemove = function(e){
+					if(drawing){
+						angle.y += (e.clientX-lastX)*factor;
+						angle.x += (e.clientY-lastY)*factor;
+						lastX = e.clientX;
+						lastY = e.clientY;
+					}
+				}
+				canvas.onmousewheel = function(e){
+					fov -= e.wheelDelta/120;
+					fov = Math.max(10,Math.min(fov,45));
+				}
+				canvas.onclick = function(e){
+					gl.uniform1i(isClicked,1);
+					var rect = canvas.getBoundingClientRect();
+					click = true;
+					clickX = e.clientX - rect.left;
+					clickY = rect.bottom - e.clientY;
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+	<canvas id="abc" width="600" height="400" style="border:1px solid red"></canvas>
+	<span>试试点击立方体</span>
+</body>
+</html>
