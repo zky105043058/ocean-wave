@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>妙味-放大镜</title>
+	<style>
+		body,h3,p,ul,li{padding: 0;margin: 0;}
+		h3{font-weight: normal;}
+		li{list-style: none;}
+
+		.course{box-sizing: border-box;width: 470px;height: 276px;padding-left: 48px;box-shadow: 0 0 8px #aaa;margin: 90px auto;position: relative;border: 1px solid transparent;}
+		.move{margin-top: 40px;height: 78px;margin-right: 50px;}
+		.tab_pane{padding-top: 38px;position: absolute;top: 0;left: 48px;overflow: hidden;}
+		.tab_pane h3{font: 0/0 a;color: transparent;background: url(../images/course_title.jpg) no-repeat;width: 400px;height: 80px;position: relative;}
+		.tab_pane:nth-child(1) h3{background-position: left 0;}
+		.tab_pane:nth-child(2) h3{background-position: left -80px;}
+		.tab_pane:nth-child(3) h3{background-position: left -160px;}
+		.course_intr{position: relative;}
+		.course_intr p:nth-child(1){padding-top: 12px;padding-bottom: 4px;font-size: 26px;color: #ac8680;}
+		.course_intr p:nth-child(2){font-size: 13px;color: #957772;}
+		
+		/*以下zoom和mirror中transition的0.8s是用于减慢放大镜的移动速度，不跟鼠标移动同步*/
+		.zoom{transition: 0.4s 0.4s transform,0.6s left;transform-origin: left bottom;}
+		.mirror{transition: 0.6s background-position;}
+		.fadeOut .zoom{transform: rotate(-60deg);transition: 0.4s transform;}
+		.tab_pane.active{z-index: 9;}
+		.tab_pane h3{opacity: 0;top: -20px;left: 0;}
+		.active h3{opacity: 1;top: 0;left: 0;transition: 0.4s;}
+		.hide h3{opacity: 0;top: 0;left: 50px;transition: 0.4s;}
+		.course_intr{opacity: 0;top: 0;left: 100%;}
+		.active .course_intr{opacity: 1;top: 0;left: 0;transition: 0.8s;}
+		.hide .course_intr{opacity: 0;top: 60px;left: 0;transition: 0.8s;}
+
+
+
+		.question{width: 198px;height: 42px;line-height: 42px;background: -webkit-linear-gradient(top,#ff6988,#d9284c 70%,#fc3f68 100%);color: #eee;text-align: center;border-radius: 20px;font-size: 17px;position: absolute;left: 44px;bottom: 32px;}
+		.buttons{position: absolute;right: 90px;bottom: 44px;}
+		.buttons li{margin-right: 10px;width: 20px;height: 20px;background: #f3e8e5;text-align: center;box-shadow: inset 0 3px 3px #ddd;border-radius: 50%;float: left;}
+		.buttons li span{display: inline-block;width: 14px;height: 14px;background: -webkit-radial-gradient(50% 30%,circle,#fff,#d62a59 50%);border-radius: 50%;position: relative;top: 3px;transform: scale(0);transition: transform 0.6s;}
+		.buttons .active span{transform: scale(1);}
+		.zoom{width: 144px;height: 172px;background: url(../images/izoom.png);position: absolute;top: 0;left: -14px;top: 24px;z-index: 99;}
+		.mirror{background: rgba(1,1,1,0.03) url(../images/course_title_big.jpg);width: 97px;height: 97px;position: absolute;right: 4px;top: 3px;border-radius: 50%;background-position: 0px 0px;background-repeat: no-repeat;}
+
+	</style>
+</head>
+<body>
+	<div class="course">
+		<div class="move">
+			<div class="tab_pane active">
+				<h3>JavaScript</h3>
+				<div class="course_intr">
+					<p>重磅升级：妙味最小JS课程大纲</p>
+					<p>全面革新旧版课程、创新近百个js实例、深度系统的大型实战项目</p>
+				</div>
+			</div>
+			<div class="tab_pane">
+				<h3>JavaScript</h3>
+				<div class="course_intr">
+					<p>重磅升级：妙味最小JS课程大纲</p>
+					<p>全面革新旧版课程、创新近百个js实例、深度系统的大型实战项目</p>
+				</div>
+			</div>
+			<div class="tab_pane">
+				<h3>JavaScript</h3>
+				<div class="course_intr">
+					<p>重磅升级：妙味最小JS课程大纲</p>
+					<p>全面革新旧版课程、创新近百个js实例、深度系统的大型实战项目</p>
+				</div>
+			</div>
+			<div class="zoom">
+				<div class="mirror"></div>
+			</div>
+		</div>
+		<p class="question">提升价值-你可想一试？</p>
+		<ul class="buttons">
+			<li class="active"><span></span></li>
+			<li><span></span></li>
+			<li><span></span></li>
+		</ul>
+	</div>
+	<script>
+	onload = function(){
+		initClickEvent();
+		initMoveEvent();
+	}
+	function initClickEvent(){
+		var btns = Array.prototype.slice.call(document.querySelectorAll('.buttons li'));
+		var panes = Array.prototype.slice.call(document.querySelectorAll('.tab_pane'));
+		var zoom = document.querySelector('.zoom');
+		var mirror = document.querySelector('.mirror');
+		var move = document.querySelector('.move');
+		var active = 0;
+		panes.forEach(function(pane){
+			pane.querySelector('h3').addEventListener('webkitTransitionEnd',function(e){
+				if(e.propertyName == 'opacity'){
+					pane.className = 'tab_pane';
+					panes[active].classList.add('active');
+					move.classList.remove('fadeOut');
+				}
+			});
+		});
+		btns.forEach(function (btn,index) {
+			btn.onclick = function(){
+				if(index == active){
+					return;
+				}
+				panes[active].classList.remove('active');
+				panes[active].classList.add('hide');
+
+				// 按钮
+				btns[active].className = '';
+				active = index;
+				btns[active].className = 'active';
+				// 镜片背景图
+				mirror.style.backgroundPositionY = -97 * index + 'px';
+				mirror.style.backgroundImage = 'none';
+				// 放大镜旋转
+				move.classList.add('fadeOut');
+
+			}
+		})
+		zoom.addEventListener('webkitTransitionEnd',function(e){
+			if(getComputedStyle(this).transform == 'none'){
+				mirror.style.backgroundImage = '';
+			}
+		});
+	}
+	function initMoveEvent(){
+		var zoom = document.querySelector('.zoom');
+		var move = document.querySelector('.move');
+		var mirror = zoom.querySelector('.mirror');
+		var mirrorPos = mirror.getBoundingClientRect();
+		var startLeft = zoom.offsetLeft,
+			startX = mirrorPos.left+mirrorPos.width/2;
+		var maxLen = document.querySelector('.tab_pane.active').getBoundingClientRect().right - zoom.getBoundingClientRect().right;
+		move.onmousemove = function(e){
+			var distance = e.clientX - startX;
+			distance = Math.max(0,Math.min(distance,maxLen));
+			zoom.style.left = startLeft + distance + 'px';
+			mirror.style.backgroundPositionX = -distance + 'px';
+		}
+		move.onmouseleave = function(e){
+			console.log('leave');
+			zoom.style.left = startLeft + 'px';
+			mirror.style.backgroundPositionX = '15px';
+		}
+		
+		
+	}
+	</script>
+</body>
+</html>

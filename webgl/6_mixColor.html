@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RotateCubic</title>
+	<script src="js/cuon-utils.js"></script>
+	<script src="js/cuon-matrix.js"></script>
+	<script src="js/webgl-utils.js"></script>
+	<script src="js/webgl-debug.js"></script>
+	<script>
+		var V = `attribute vec4 aPos,aColor;
+		varying vec4 vColor;
+		void main(){
+			gl_Position = aPos;
+			vColor = aColor;
+		}`;
+		var F = `precision mediump float;
+		varying vec4 vColor;
+		void main(){
+			gl_FragColor = vColor;
+		}`;
+		var data = new Float32Array([
+				-0.5,-0.5, 0.8,0.3,0,0.5,
+				0,0.2, 0.8,0.3,0,0.5,
+				0.5,-0.5, 0.8,0.3,0,0.5,
+				0,0, 0.1,0.4,0.9,0.6,
+				0,-0.4, 0.1,0.4,0.9,0.6,
+				0.7,-0.2, 0.1,0.4,0.9,0.6
+			]);
+		var size = data.BYTES_PER_ELEMENT;
+		onload = function(){
+			var canvas = document.getElementById('3d');
+			var gl = canvas.getContext('webgl');
+			if(!initShaders(gl,V,F)){
+				console.error('Failed');
+				return;
+			}
+			var aPos = gl.getAttribLocation(gl.program,'aPos');
+			var aColor = gl.getAttribLocation(gl.program,'aColor');
+			var buffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+			gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+			gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,size * 6,0);
+			gl.enableVertexAttribArray(aPos);
+			gl.vertexAttribPointer(aColor,4,gl.FLOAT,false,size*6,size*2);
+			gl.enableVertexAttribArray(aColor);
+
+			gl.enable(gl.BLEND);
+			gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+			gl.clearColor(1,1,1,1);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			gl.drawArrays(gl.TRIANGLES,0,6);
+		}
+	</script>
+</head>
+<body>
+	<canvas id="3d" width="600" height="400" style="border:1px solid red"></canvas>
+</body>
+</html>

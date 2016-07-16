@@ -3,6 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<title>RotateCubic</title>
+	<style>
+	div{position: relative;}
+	canvas{position: absolute;left: 0;top: 0;}
+	</style>
 	<script src="js/cuon-utils.js"></script>
 	<script src="js/cuon-matrix.js"></script>
 	<script src="js/webgl-utils.js"></script>
@@ -78,7 +82,7 @@
 		var angle = {x:0,y:0};
 		var fov = 25;
 		onload = function(){
-			var canvas = document.getElementById('abc');
+			var canvas = document.getElementById('3d');
 			var gl = canvas.getContext('webgl');
 			if(!initShaders(gl,V,F)){
 				console.error('Failed to init shaders');
@@ -133,10 +137,7 @@
 				gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
 				if(click){
 					gl.readPixels(clickX,clickY,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
-					// 没有点击在立方体上，之前被点击的面保持不变
-					if(pixels[3]!=255){
-						gl.uniform1i(clickedColor,pixels[3]);
-					}
+					gl.uniform1i(clickedColor,pixels[3]);
 					gl.uniform1i(isClicked,0);
 					gl.drawElements(gl.TRIANGLES,indexData.length,gl.UNSIGNED_BYTE,0);
 					click = false;
@@ -175,11 +176,55 @@
 					clickY = rect.bottom - e.clientY;
 				}
 			}
+			render2D();
 		}
+		function render2D(){
+			var canvas = document.getElementById('2d');
+			var ct = canvas.getContext('2d');
+			ct.font = '50px impact';
+			ct.textAlign = 'center';
+			ct.fillStyle = '#490';
+			ct.fillText('旋转立方体',300,200);
+			canvas.onclick = function(){
+				animate(canvas,{opacity:0},function(){
+					canvas.style.display = 'none';
+				})
+			}
+		}
+		function animate(obj,attrConfig,callback){
+			clearInterval(obj.timer);
+			obj.timer = setInterval(function(){
+				var end = true,attr,val,currentVal,speed;
+				for(attr in attrConfig){
+					val = attrConfig[attr];
+					currentVal = getComputedStyle(obj,null)[attr];
+					if(attr == 'opacity'){
+						val *= 100;
+						currentVal *= 100;	
+					}
+					speed = (val-currentVal)/8;
+					speed = speed>0 ? Math.ceil(speed) : Math.floor(speed);
+					obj.style[attr] = attr != 'opacity' ? currentVal + speed : (currentVal + speed)/100;
+					if(val != currentVal+speed){
+						end = false;
+					}
+				}
+				if(end){
+					clearInterval(obj.timer);
+					if(typeof callback == 'function'){
+						callback();
+					}
+				}
+			},30);
+		}
+		
 	</script>
 </head>
 <body>
-	<canvas id="abc" width="600" height="400" style="border:1px solid red"></canvas>
+	<div>
+		<canvas id="3d" width="600" height="400" style="border:1px solid red"></canvas>
+		<canvas id="2d" width="600" height="400"></canvas>
+	</div>
 	<span>试试点击立方体</span>
 </body>
 </html>

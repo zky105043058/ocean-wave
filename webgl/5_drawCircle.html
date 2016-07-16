@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>画圆</title>
+	<script src="js/cuon-utils.js"></script>
+	<script src="js/cuon-matrix.js"></script>
+	<script src="js/webgl-utils.js"></script>
+	<script src="js/webgl-debug.js"></script>
+	<script>
+		var V = `void main(){
+			gl_Position = vec4(0,0,0,1);
+			gl_PointSize = 100.0;
+		}`;
+		var F = `precision mediump float;
+		void main(){
+			float distance = distance(gl_PointCoord,vec2(0.5,0.5));
+			if(distance<0.5){
+				gl_FragColor = vec4(1.0,0,0,distance);
+			}else{
+				discard;
+			}
+		}`;
+		onload = function(){
+			var canvas = document.getElementById('3d');
+			var gl = canvas.getContext('webgl');
+			if(!initShaders(gl,V,F)){
+				console.error('初始化着色器失败！');
+				return;
+			}
+			gl.drawArrays(gl.POINTS,0,1);
+		}
+	</script>
+</head>
+<body>
+	<canvas id="3d" width="600" height="400" style="border:1px solid red"></canvas>
+</body>
+</html>

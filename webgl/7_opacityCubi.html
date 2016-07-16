@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RotateCubic</title>
+	<script src="js/cuon-utils.js"></script>
+	<script src="js/cuon-matrix.js"></script>
+	<script src="js/webgl-utils.js"></script>
+	<script src="js/webgl-debug.js"></script>
+	<script>
+	var V = `attribute vec4 aPos;
+	uniform mat4 mvpMatrix;
+	void main(){
+		gl_Position = mvpMatrix * aPos;
+	}`;
+	var F = `precision mediump float;
+	void main(){
+		gl_FragColor = vec4(0.3,0.4,0.9,0.8);
+	}`;
+	var data = new Float32Array([
+			-0.5,0.5,0.5,
+			0.5,0.5,0.5,
+			0.5,-0.5,0.5,
+			-0.5,-0.5,0.5,
+
+			-0.5,0.5,-0.5,
+			0.5,0.5,-0.5,
+			0.5,-0.5,-0.5,
+			-0.5,-0.5,-0.5
+		]),
+	size = data.BYTES_PER_ELEMENT,
+	indexData = new Uint8Array([
+			0,1,2,
+			0,2,3,
+			4,5,6,
+			4,6,7,
+			4,5,1,
+			4,1,0,
+			7,6,2,
+			7,2,3,
+			4,0,3,
+			4,3,7,
+			1,5,6,
+			1,6,2
+		]);
+	onload = function () {
+		var canvas = document.getElementById('3d'),
+			gl = canvas.getContext('webgl');
+		if(!initShaders(gl,V,F)){
+			console.log('Failed');
+			return;
+		}
+		var aPos = gl.getAttribLocation(gl.program,'aPos'),
+			mvpMatrix = gl.getUniformLocation(gl.program,'mvpMatrix');
+		//模型视图矩阵
+		var matrix = new Matrix4();
+		matrix.setPerspective(25,canvas.width/canvas.height,1,100).lookAt(3,3,7,0,0,0,0,1,0);
+		gl.uniformMatrix4fv(mvpMatrix,false,matrix.elements);
+		//缓冲区
+		var buffer = gl.createBuffer(),
+		iBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+		gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+		gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,3*size,0);
+		gl.enableVertexAttribArray(aPos);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,indexData,gl.STATIC_DRAW);
+
+		// gl.enable(gl.DEPTH_TEST);
+		gl.enable(gl.BLEND);
+		console.log(gl.ONE_MINUS_SRC_ALPHA);
+		gl.blendFunc(gl.ONE_MINUS_SRC_ALPHA,gl.SRC_ALPHA);
+		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+		gl.drawElements(gl.TRIANGLES,data.length,gl.UNSIGNED_BYTE,0);
+	}
+	</script>
+</head>
+<body>
+	<canvas id="3d" width="600" height="400" style="border:1px solid red"></canvas>
+</body>
+</html>

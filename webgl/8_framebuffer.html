@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RotateCubic</title>
+	<script src="js/cuon-utils.js"></script>
+	<script src="js/cuon-matrix.js"></script>
+	<script src="js/webgl-utils.js"></script>
+	<script src="js/webgl-debug.js"></script>
+	<script>
+	var data = new Float32Array([
+			-0.5,0.5,  0,1,
+			0.5,0.5,  1,1,
+			0.5,-0.5,  1,0,
+			-0.5,0.5,  0,1,
+			0.5,-0.5,  1,0,
+			-0.5,-0.5,  0,0
+		]);
+	var size = data.BYTES_PER_ELEMENT;
+	var V = `attribute vec4 aPos;
+	attribute vec2 aCoord;
+	varying vec2 coord;
+	void main(){
+		gl_Position = aPos;
+		coord = aCoord;
+	}`;
+	var F = `precision mediump float;
+	uniform bool gate;
+	uniform sampler2D sampler;
+	varying vec2 coord;
+	void main(){
+		if(gate){
+			gl_FragColor = texture2D(sampler,coord);
+		}else{
+			gl_FragColor = vec4(1.0,0.6,0,1.0);
+		}
+	}`;
+	onload = function(){
+		var canvas = document.getElementById('3d'),
+			gl = canvas.getContext('webgl');
+		if(!initShaders(gl,V,F)){
+			console.error('Failed');
+			return;
+		}
+		// 创建帧缓冲区
+		var frameBuffer = gl.createFramebuffer();
+		var texture = gl.createTexture();
+		// gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D,texture);
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+		gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+		gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,canvas.width,canvas.height,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+		var renderBuffer = gl.createRenderbuffer();
+		gl.bindRenderbuffer(gl.RENDERBUFFER,renderBuffer);
+		gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,canvas.width,canvas.height);
+
+		//绑定帧缓冲区
+		gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
+		gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,renderBuffer);
+		//检查帧缓冲区设置
+		var e = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+		if(e !== gl.FRAMEBUFFER_COMPLETE){
+			console.error('Failed to init Framebuffer');
+			return;
+		}
+		//赋值
+		var aPos = gl.getAttribLocation(gl.program,'aPos'),
+			gate = gl.getUniformLocation(gl.program,'gate'),
+			aCoord = gl.getAttribLocation(gl.program,'aCoord'),
+			sampler = gl.getUniformLocation(gl.program,'sampler');
+		var buffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+		gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+		gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,size * 4,0);
+		gl.enableVertexAttribArray(aPos);
+		gl.vertexAttribPointer(aCoord,2,gl.FLOAT,false,size * 4,size * 2);
+		gl.enableVertexAttribArray(aCoord);
+		gl.viewport(0,0,512,256);
+		gl.drawArrays(gl.TRIANGLES,0,6);
+		//使用帧缓冲区
+		gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+		// gl.uniform1i(gate,1);
+		gl.uniform1i(sampler,0);
+		gl.drawArrays(gl.TRIANGLES,0,6);
+	}
+	</script>
+</head>
+<body>
+	<canvas id="3d" width="512" height="256" style="border:1px solid red"></canvas>
+</body>
+</html>

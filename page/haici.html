@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Demo</title>
+	<style>
+		*{padding: 0;margin: 0;}
+		body{background: #fff;font-size: 14px;font-family: Helvetica;}
+		li{list-style: none;}
+		a{color: inherit;text-decoration: none;}
+		.clear{*zoom: 1;}
+		.clear:after{content: '';display: block;clear: both;visibility: hidden;}
+		h3{font-weight: normal;font-size: 14px;}
+	
+		
+		header{background: #2dacbf;}
+		.container{width: 1200px;margin: 0 auto;}
+		ul.nav-left{float: left;}
+		ul.nav-right{float: right;}
+		header li{float: left;}
+		header li a{float:left;padding: 0 0.75em;height: 40px;line-height: 40px;color: #fff;}
+		header .nav-left .active a{border-bottom: 2px solid #f60;}
+		header .nav-left a:hover{background: #aaa;}
+		header em{float: left;height: 40px;line-height: 40px;color: #fff;}
+		header em{float: left;font-style: normal;}
+		.more{position: relative;}
+		.more a{margin-top: 4px;padding-bottom: 4px;height: 32px;line-height: 32px;background: transparent;border: 1px solid transparent;border-bottom: none;}
+		.more a:hover{border: 1px solid #2fb8cb;background: #fff;color: #2fb8cb;}
+		.more ol{display: none;position: absolute;top: 100%;padding: 0 1px;width: 188px;border-left: 1px solid #2fb8cb;border-right: 1px solid #2fb8cb;}
+		.more li{padding: 2px 0;border-bottom: 1px solid #2fb8cb;}
+		.more span{float: left;;padding: 8px 8px;width: 78px;font-size: 12px;}
+		.more span:hover{background: #ddd;}
+		.more:hover ol{display: block;}
+		
+		.search{border-bottom: 1px solid #ccc;}
+		.search img{display: block;float: left;padding: 45px 10px 20px 0;}
+		.search .lang{padding-top: 10px;height: 48px;line-height: 48px;}
+		.lang a{padding: 0 6px;color: #366;}
+		.lang a.active{font-weight: bold;}
+		.wspace{background: url(images/to.gif) no-repeat center center;}
+		.searchbar{border: 4px solid #2dacbf;padding: 0 4px;height: 40px;line-height: 40px;width: 640px;vertical-align: top;margin-right: 6px;}
+		.searchbar+button{padding: 10px 12px;font-size: 20px;color: #fff;background: #2dacbf;vertical-align: top;}
+		.main{padding-top: 10px;}
+		aside{float: left;width: 8em;}
+		aside dl{padding-left: 10px;padding-bottom: 10px;border-right: 1px solid #eee;border-bottom: 1px solid #eee;}
+		aside dt{padding: 4px;font-size: 16px;font-size: 黑体;color: #333;}
+		aside dd a{display: block;padding-left: 1.5em;line-height: 28px;height: 28px;font-size: 宋体;color: #366;}
+		aside dd a:hover{background: #eee;border-radius: 4px;}
+		article{float: left;padding-left: 16px;width: 760px;}
+		article h1{float: left;font: bold 30px/1.25em 微软雅黑;color: #094;padding-right: 16px;}
+		.hasadd{width: 20px;height: 22px;float:left;background: url(images/save.png);margin-top: 12px;}
+		.word span{float:left;padding: 16px 0 0 20px;font-size: 12px;color: #555;}
+		.word .star{float: left;height: 14px;width: 0;background: #fff url(images/star.png) repeat-x;font-size: 0;margin: 16px 4px;}
+		.star.one{width: 15px;}
+		.star.two{width: 30px;}
+		.star.three{width: 45px;}
+		.star.four{width: 60px;}
+		.star.five{width: 75px;}
+		.soundmark{margin-top: 14px;}
+		.soundmark li{float: left;}
+		.soundmark kbd{color: #aaa;}
+		.soundmark span{color: #555;line-height: 18px;display: inline-block;vertical-align: top;}
+		.soundmark a{display: inline-block;width:12px;height:18px;margin-right: 6px;margin-left:4px;vertical-align: top;background: #fff url(images/sound.png) no-repeat 0 0;}
+		.soundmark a.man{background-position: right top;margin-right: 32px;}
+		.translate{line-height: 30px;margin-top: 10px;}
+		.translate li{height: 30px;}
+		.translate span{width: 40px;color: #094;font-size: 16px;float: left;font-family: Georgia,serif;}
+		.translate strong{float: left;}
+		article nav{border-bottom: 1px solid #ccc;margin-top: 46px;margin-bottom: 10px;position: relative;padding-left: 40px;width: auto;}
+		article nav span{padding: 2px 5px;border: 1px solid #2fb8cb;border-radius: 3px;color: #2fb8cb;position: absolute;top: 6px;left: 0;font-size: 12px;}
+		article nav a{float:left;margin-bottom: -1px;height: 30px;line-height: 30px;color: #007f91;padding: 0 12px;margin-right: 8px;border: 1px solid #ccc;border-bottom-color: transparent;background: #fafafa;}
+		article nav a.active{border-top: 2px solid #2fb8cb;border-bottom: 1px solid #fff;color: #444;background: #fff;}
+		article .tab-content{padding-top: 20px;}
+		.mt{padding-bottom: 20px;}
+		.mt div{font-size: 16px;color: #ccd2dd;padding-bottom: 8px;}
+		.mt div span{color: #094;font-style: 12px;}
+		.mt ol{padding-left: 28px;line-height: 28px;color: #333;height: 56px;overflow: hidden;}
+		.tab-pane ul li a{color: #007f91;margin-left: 23px;padding-left: 12px;}
+		.tab-pane ul li a:nth-of-type(1){background: #fff url(images/up-down.gif) no-repeat left top;}
+		.tab-pane ul li a:nth-of-type(2){display: none;background: #fff url(images/up-down.gif) no-repeat left -16px;}
+		.down a:nth-of-type(1){display: none;}
+		.down a:nth-of-type(2){display: inline!important;}
+		.down ol{height: auto!important;}
+		.example>li{padding-bottom: 20px;}
+		.example h3{padding-left: 14px;padding-bottom: 6px;color: #666;}
+		.example ol{height: 120px;overflow: hidden;}
+		.example ol li:hover{background: #f5f7f4;}
+		.en{text-indent: 2em;height: 32px;line-height: 32px;color: #333;}
+		.ch{text-indent: 3em;height: 28px;line-height: 28px;color: #333;}
+		.highlight{color: #00994f;}
+		.example+svg{border: 1px solid #efefef;margin-left: 15px;margin-bottom: 17px;}
+		.lookmore{height: 50px;line-height: 50px;color: #007f91;margin-bottom: 100px;margin-left: 15px;}
+
+		.other{float: right;}
+		section{box-sizing: border-box;width: 300px;margin-bottom: 20px;}
+		.hot-word h3{color: #336695;padding: 0 9px;height: 34px;line-height: 34px;border: 1px solid #eee;}
+		.hot-word h3 a{float: right;font-size: 12px;color: #366;font-weight: normal;}
+		.hot-word p{padding: 16px;border: 1px solid #eee;border-top: none;color: #444;position: relative;}
+		.hot-word .active em{position: absolute;width: 16px;height: 16px;background: #e21;right: 0;top: 0;-webkit-clip-path: polygon(0 0,100% 0,100% 100%);}
+		.dictionary{border: 1px solid #eee;padding-bottom: 15px;}
+		.dictionary h3{height: 44px;line-height: 44px;padding-left: 10px;color: #444;}
+		.dictionary a{height: 30px;line-height: 30px;display: block;text-indent: 2em;color: #888;}
+		.dictionary a:hover{text-decoration: underline;}
+	</style>
+	<script src="js/jquery-2.1.4.js"></script>
+	<script src="js/TweenMax.js"></script>
+</head>
+<body>
+<header>
+	<div class="container clear">
+		<ul class="nav-left">
+			<li class="active"><a href="">海词</a></li>
+			<li><a href="#" style="position: relative;">权威词典</a></li>
+			<li><a href="#">翻译</a></li>
+			<li><a href="#">网校</a></li>
+			<li class="more">
+				<a href="#">更多</a>
+				<ol>
+					<li>
+						<span>生词本</span>
+						<span>背单词</span>
+					</li>
+					<li>
+						<span>海词英语</span>
+						<span>桌面客户端</span>
+					</li>
+				</ol>
+			</li>
+			<li><a href="#">手机版</a></li>
+		</ul>
+		<ul class="nav-right">
+			<li><a href="#">繁体版</a></li><em>|</em>
+			<li><a href="#">登录</a></li><em>|</em>
+			<li><a href="#">注册</a></li><em>|</em>
+			<li><a href="#">意见反馈</a></li>
+		</ul>
+	</div>
+</header>
+<div class="container clear search">
+	<a href="#"><img src="images/dict_logo.png" alt="logo"></a>
+	<div>
+		<nav class="lang">
+			<a href="#" class="wspace active">英　汉</a>
+			<a href="#" class="wspace">韩　汉</a>
+			<a href="#" class="wspace">日　汉</a>
+			<a href="#">更多</a>
+			<i>|</i>
+			<a href="#">句海</a>
+			<a href="#">汉语</a>
+			<i>|</i>
+			<a href="#">上海话</a>
+			<a href="#">广东话</a>
+			<a href="#">缩略语</a>
+			<a href="#">人名</a>
+		</nav>
+		<form action="#">
+			<input type="text" class="searchbar">
+			<button>查词</button>
+		</form>
+	</div>
+</div>
+<div class="container clear main">
+	<aside>
+		<dl>
+			<dt>目录</dt>
+			<dd><a href="javascript:void(0)">释义</a></dd>
+			<dd><a href="javascript:void(0)">例句</a></dd>
+			<dd><a href="javascript:void(0)">讲解</a></dd>
+			<dd><a href="javascript:void(0)">问答</a></dd>
+			<dd><a href="javascript:void(0)">相关</a></dd>
+		</dl>
+		<dl>
+			<dt>应用</dt>
+			<dd><a href="javascript:void(0)">生词本</a></dd>
+			<dd><a href="javascript:void(0)">单词管家</a></dd>
+			<dd><a href="javascript:void(0)">做真题</a></dd>
+		</dl>
+		<dl>
+			<dt>附录</dt>
+			<dd><a href="javascript:void(0)">音标说明</a></dd>
+		</dl>
+		<dl>
+			<dt>查词历史</dt>
+			<dd><a href="javascript:void(0)">export</a></dd>
+			<dd><a href="javascript:void(0)">Intuitiv</a></dd>
+			<dd><a href="javascript:void(0)">Reconcil</a></dd>
+			<dd><a href="javascript:void(0)">opaque</a></dd>
+			<dd><a href="javascript:void(0)">standalo</a></dd>
+			<dd><a href="javascript:void(0)">查看更多<span>&raquo;</span></a></dd>
+		</dl>
+	</aside>
+	<article>
+		<div class="word clear">
+			<h1>sidestep</h1>
+			<a href="#" class="hasadd"></a>
+			<span>畅通词汇</span>
+			<a href="#" class="star four"></a>
+		</div>
+		<ol class="soundmark clear">
+			<li>
+				<span>英<kbd>[ʃiːt]</kbd></span>
+				<a href="#"></a>
+				<a href="#" class="man"></a>
+			</li>
+			<li>
+				美<kbd>[ʃiːt]</kbd>
+				<a href="#"></a>
+				<a href="#" class="man"></a>
+			</li>
+		</ol>
+		<ul class="translate clear">
+			<li>
+				<span>n.</span>
+				<strong>被单;一片</strong>
+			</li>
+			<li>
+				<span>v.</span>
+				<strong>铺盖</strong>
+			</li>
+		</ul>
+		<nav class="clear">
+			<span>释义</span>
+			<a href="#" class="active">详见释义</a>
+			<a href="#">双解释义</a>
+			<a href="#">行业释义</a>
+			<a href="#">英英释义</a>
+		</nav>
+		<div class="tab-content">
+			<div class="tab-pane">
+				<ul>
+					<li class="mt">
+						<div><span>n.</span>(名词)</div>
+						<ol>
+							<li>1.薄片</li>
+							<li>2.薄板</li>
+							<li>3.一张</li>
+							<li>4.一大片</li>
+							<li>5.床单，被单，褥单</li>
+							<li>6.报纸，杂志</li>
+							<li>7.整版邮票</li>
+							<li>8.<书>帆</li>
+							<li>9.【印】折帖</li>
+							<li>10.帆脚索</li>
+							<li>11.印刷品，复印品</li>
+							<li>12.表格</li>
+							<li>13.单张（纸）</li>
+							<li>14.单子</li>
+							<li>15.缭绳</li>
+							<li>16.裹尸布</li>
+						</ol>
+						<a href="javascript:void(0)">查看更多</a>
+						<a href="javascript:void(0)">收起</a>
+					</li>
+					<li class="mt">
+						<div><span>v.</span>(动词)</div>
+						<ol>
+							<li>1.包</li>
+							<li>2.使成大片</li>
+						</ol>
+						<a href="javascript:void(0)">查看更多</a>
+						<a href="javascript:void(0)">收起</a>
+					</li>
+					<li class="mt">
+						<div><span>adj.</span>(形容词)</div>
+						<ol>
+							<li>1.片状的</li>
+							<li>2.滚压成片的</li>
+						</ol>
+						<a href="javascript:void(0)">查看更多</a>
+						<a href="javascript:void(0)">收起</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<nav class="clear">
+			<span>用例</span>
+			<a href="#" class="active">例句</a>
+			<a href="#">常见句型</a>
+			<a href="#">常见短语</a>
+			<a href="#">词汇搭配</a>
+			<a href="#">经典引文</a>
+		</nav>
+		<div class="tab-content">
+			<div class="tab-pane">
+				<ul class="example">
+					<li>
+						<h3>用作名词(n.)</h3>
+						<ol>
+							<li>
+								<p class="en">1. We change the sheet very week.</p>
+								<p class="ch">我们每个星期换一次床单。</p>
+							</li>
+							<li>
+								<p class="en">2. The doctor wanted us to use the sheet for a shroud.</p>
+								<p class="ch">医生想让我们用床单当裹尸布。</p>
+							</li>
+							<li>
+								<p class="en">3. He put a fresh sheet in the typewriter.</p>
+								<p class="ch">他把一张纸放进了打字机中。</p>
+							</li>
+						</ol>
+						<a href="javascript:void(0)">查看更多</a>
+						<a href="javascript:void(0)">收起</a>
+					</li>
+					<li>
+						<h3>用作动词 (v.)</h3>
+						<ol>
+							<li>
+								<p class="en">1. A plastic sheet was pegged down over the compost heap to hasten decomposition.</p>
+								<p class="ch">把塑料布铺盖在肥堆上，并用木桩固定好，以加速肥料腐烂。</p>
+							</li>
+							<li>
+								<p class="en">In effecting recharge by flooding, water is spread over the land surface in a thin sheet.</p>
+								<p class="ch">以漫灌法所进行的补给是将水成片地铺洒在地面上。</p>
+							</li>
+							<li>
+								<p class="en">3. He put a fresh sheet in the typewriter.</p>
+								<p class="ch">他把一张纸放进了打字机中。</p>
+							</li>
+						</ol>
+						<a href="javascript:void(0)">查看更多</a>
+						<a href="javascript:void(0)">收起</a>
+					</li>
+				</ul>
+				<svg width="284" height="202" id="word_percent">
+					<text x="4" y="14" text-anchor="start" fill="#888" font-size="12">词性常用度分布图</text>
+					<text x="280" y="196" text-anchor="end" fill="#888" font-size="12">海词统计</text>
+				</svg>
+				<p class="lookmore">去句海，查更多例句<span>&raquo;</span></p>
+			</div>
+		</div>
+	</article>
+	<div class="other">
+		<section class="hot-word">
+			<h3>今日热词<a href="#">更多<span>&raquo;</span></a></h3>
+			<p class="active">严重水涝 - severe waterlogging <em></em></p>
+			<p>移动设备 - mobile devices</p>
+			<p>民法典 - Civil Code</p>
+		</section>
+		<section class="dictionary">
+			<h3>相关词典网站：</h3>
+			<a href="#" title="查词典">牛津高阶第八版</a>
+			<a href="#" title="查词典">美国韦氏词典</a>
+			<a href="#" title="查词典">Dictionary.com</a>
+			<a href="#" title="查词典">Free Dictionary</a>
+			<a href="#" title="查词典">维基百科 (自由的百科全书)</a>
+		</section>
+	</div>
+
+</div>
+
+
+<script>
+	//查看更多-收起操作
+	var doms = Array.prototype.slice.call(document.querySelectorAll('.tab-pane ul li a'));
+	doms.forEach(function(dom){
+		dom.onclick = function(){
+			this.parentNode.classList.toggle('down');
+		}
+	})
+	//画svg图
+	var svg = document.getElementById('word_percent'),
+		r = 50,point = {x:142,y:101},angle = 0,start = 0,x1,x2,y1,y2;
+	var data = [{attr: '形容词',percent:20,color: '#80e3d7'},{attr: '动词',percent:20,color: '#53c8ba'},{attr: '名词',percent: 60,color: '#19b29f'}];
+	var len = data.length;
+	for(var i=0;i<len;i++){
+		var d = data[i];
+		var angle = (d.percent*360/100)*Math.PI/180 + angle;
+		var startX = r * Math.cos(start) + point.x,
+			startY = -r * Math.sin(start) + point.y,
+			angleX = r * Math.cos(angle) + point.x,
+			angleY = -r * Math.sin(angle) + point.y;
+		svg.appendChild(createTag('path',{
+			d: `M${point.x} ${point.y}L${startX} ${startY}A${r} ${r} 0 ${d.percent>50?1:0} 0 ${angleX} ${angleY}`,
+			fill: d.color,
+			stroke: '#fff',
+			'stroke-width': '1px',
+			'stroke-linejoin': 'round'
+		}));
+		console.log(`M${point.x} ${point.y}L${startX} ${startY}A${r} ${r} 0 ${d.percent>50?1:0} 0 ${angleX} ${angleY}`);
+		start = angle;
+	}
+	function createTag(name,attrs){
+		var dom = document.createElementNS('http://www.w3.org/2000/svg',name);
+		for(var i in attrs){
+			dom.setAttribute(i,attrs[i]);
+		}
+		return dom;
+	}
+</script>
+</body>
+
+</html>
