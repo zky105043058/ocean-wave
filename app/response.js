@@ -9,7 +9,8 @@ module.exports = {
 			}
 		}
 		this.statusMessage = msg || '';
-		this.end();
+		this.setHeader('Content-Type', 'text/html; charset=utf-8')
+		this.end('<h1>页面不存在 404！</h1>');
 	},
 	render: function(text,options){
 		var opts = util.extend({},this.app.locals);

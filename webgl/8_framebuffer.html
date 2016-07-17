@@ -58,6 +58,7 @@
 		gl.bindFramebuffer(gl.FRAMEBUFFER,frameBuffer);
 		gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
 		gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,renderBuffer);
+		gl.bindTexture(gl.TEXTURE_2D,null);
 		//检查帧缓冲区设置
 		var e = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
 		if(e !== gl.FRAMEBUFFER_COMPLETE){
@@ -80,7 +81,9 @@
 		gl.drawArrays(gl.TRIANGLES,0,6);
 		//使用帧缓冲区
 		gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-		// gl.uniform1i(gate,1);
+		 gl.uniform1i(gate,1);
+		 // gl.activeTexture(gl.TEXTURE0);
+		 gl.bindTexture(gl.TEXTURE_2D,texture);
 		gl.uniform1i(sampler,0);
 		gl.drawArrays(gl.TRIANGLES,0,6);
 	}

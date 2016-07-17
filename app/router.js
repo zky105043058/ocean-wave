@@ -26,6 +26,7 @@ util.extend(proto,{
 				}
 				if(!layer){
 					res.error(404);
+					return;
 				}
 				me._doLayer(layer,req,res);
 			}

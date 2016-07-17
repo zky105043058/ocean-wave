@@ -35,6 +35,7 @@ util.extend(app,{
 			throw 'app的views未设置！';
 		}
 		path = views + '/' + text + '.' + this.set('view engine');
+		console.log('path:'+path);
 		res.end(fs.readFileSync(path));
 	}
 	

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>琴弦文字</title>
+	<style>
+	li{list-style: none;height: 30px;line-height: 30px;cursor: pointer;font-size: 14px;}
+	</style>
+</head>
+<body>
+	<ul>
+		<li>
+			小提琴的弦上得太紧，突然断了。
+		</li>
+		<li>
+			这种差使医生可不大喜欢干。
+		</li>
+		<li>
+			大江东去，浪淘尽，千古风流人物。故垒西边，人道是，三国周郎赤壁。
+		</li>
+	</ul>
+	<script>
+		var list = Array.prototype.slice.call(document.getElementsByTagName('li'));
+		list.forEach(function(li){
+			animateText(li)
+		});
+		function animateText(li){
+			var text = li.textContent,
+				fragment = document.createDocumentFragment(),
+				max = parseInt(getComputedStyle(li).fontSize),
+				span;
+			li.innerHTML = '';
+			text.split('').forEach(function(ch){
+				span = document.createElement('span');
+				span.textContent = ch;
+				span.style.position = 'relative';
+				fragment.appendChild(span);
+			});
+			li.appendChild(fragment);
+			li.onmousemove = function(e){
+				var target = e.target,
+					dom = target,
+					distance = 0,
+					num = 0;
+				// 在li的空白处
+				if(target.nodeName != 'SPAN'){
+					return;
+				}
+				// 触发mouseenter时
+				if(this.y==null){
+					this.startY = this.y = e.clientY;
+					return;
+				}
+				// 同一个文字上水平移动
+				if(target == this.targetSpan && this.y == e.clientY){
+					return;
+				}
+				distance = e.clientY - this.startY;
+				num = Math.abs(distance);
+				if(num>max){
+					goBack(this);
+					return;
+				}
+				target.style.top = distance + 'px';
+				while((dom = dom.previousElementSibling) && num--){
+					dom.style.top = (distance>0?1:-1) * num + 'px';
+				}
+				dom = target;
+				num = Math.abs(distance);
+				while((dom = dom.nextElementSibling) && num--){
+					dom.style.top = (distance>0?1:-1) * num + 'px';
+				}
+				this.targetSpan = target;
+				this.y = e.clientY;
+			}
+			li.onmouseout = function(){
+				goBack(this);
+				this.targetSpan = null;
+				this.y = null;
+			}
+			function goBack(li){
+				spans = Array.prototype.slice.call(li.getElementsByTagName('span'));
+				spans.forEach(function(span){
+					if(span.style.top && span.style.top != '0'){
+						span.style.top = '0';
+					}
+				})
+			}
+		}
+	</script>
+</body>
+</html>
